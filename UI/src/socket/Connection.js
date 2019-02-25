@@ -22,9 +22,7 @@ class Connection extends Component {
             sessionStorage.setItem('currentUser', this.state.currentUser);
 
             let hubConnection = new signalR.HubConnectionBuilder()
-                .withUrl(API.CONNECTION_ENDPOINT, options => {
-                    options.Headers["UserId"] = this.state.currentUser;
-                })
+                .withUrl(API.CONNECTION_ENDPOINT)
                 .configureLogging(signalR.LogLevel.Trace)
                 .build();
 

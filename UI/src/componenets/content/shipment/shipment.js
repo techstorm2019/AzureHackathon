@@ -4,12 +4,17 @@ import ShipmentColumns from "./shiipment-columns";
 import FetchHeader from "../../../constants/Fetch-header";
 import RestCheck from "../../../constants/REST-check";
 import API from "../../../constants/API-config";
+import {ModalScreen} from 'damco-components';
 
 class Shipment extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            showModal: false,
+            selectedStatus: 1,
+            selectedOrder: {},
+            shipmentStatus: [],
             shipmentData: [],
             selectedRows: [],
             selectAll: 0,
@@ -36,23 +41,42 @@ class Shipment extends Component {
     }
 
     componentWillMount() {
-        fetch(API.GET_ORDERS, {
+        fetch(API.GET_SHIPMENT_STATUS_LIST, {
             headers: FetchHeader,
             credentials: 'same-origin'
         }).then((response) => {
             return RestCheck(response);
         }).then((responseJSON) => {
-            if(typeof responseJSON.carrier === "undefined") {
-                throw Error("Invalid response");
-            }else {
-                this.setState({
-                    shipmentData: responseJSON
-                });
-            }
+            this.setState({
+                shipmentStatus: responseJSON
+            }, () => {
+                this.getOrders();
+            });
         }).catch((error) => {
             console.log(error);
         });
     }
+
+    handleChange = (event) => {
+        const state = this.state;
+        state[event.target.name] = event.target.value;
+        this.setState(state);
+    };
+
+    getOrders = () => {
+        fetch(API.GET_ORDERS+"?userID="+sessionStorage.getItem('currentUser'), {
+            headers: FetchHeader,
+            credentials: 'same-origin'
+        }).then((response) => {
+            return RestCheck(response);
+        }).then((responseJSON) => {
+            this.setState({
+                shipmentData: responseJSON
+            });
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
 
     selectRow = (event, original) => {
         if (event.target.checked) {
@@ -61,8 +85,7 @@ class Shipment extends Component {
             }, () => {
                 //this.updateSelectAll();
             });
-        }
-        else {
+        } else {
             const toDelete = new Set([original]);
             let newArr = this.state.selectedRows.filter(obj => !toDelete.has(obj));
             this.setState({
@@ -75,15 +98,100 @@ class Shipment extends Component {
         let parent = event.target.parentNode.parentNode.parentNode;
         if (event.target.checked) {
             parent.classList.add("-selected");
-        }
-        else {
+        } else {
             parent.classList.remove("-selected");
         }
+    };
+
+    hideContextRibbon = () => {
+        this.setState({
+            selectedRows: []
+        });
+    };
+
+    showModal = () => {
+        this.setState({
+            showModal: true,
+        });
+    };
+
+    closeModal = () => {
+        this.setState({
+            showModal: false
+        });
+    };
+
+    editOrder = () => {
+        fetch(API.GET_ORDER+"?orderID="+this.state.selectedRows[0].ID, {
+            headers: FetchHeader,
+            credentials: 'same-origin'
+        }).then((response) => {
+            return RestCheck(response);
+        }).then((responseJSON) => {
+            this.setState({
+                selectedOrder: responseJSON.Order,
+                selectedStatus: responseJSON.OrderShipmentStatusList.filter((status) => status.IsCurrentStatus === true)[0].ShipmentStatusID
+            }, () => {
+                console.log(this.state.selectedStatus);
+                this.showModal();
+            });
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+
+    updateOrderStatus = () => {
+        const orderID = this.state.selectedOrder.ID;
+        const shipmentStatusID = this.state.selectedStatus;
+        const notes = '';
+
+        fetch(API.POST_UPDATE_ORDER_STATUS, {
+            method: 'POST',
+            headers: FetchHeader,
+            credentials: 'same-origin',
+            body: JSON.stringify({orderID,shipmentStatusID,notes})
+        }).then((response) => {
+            return RestCheck(response);
+        }).then((responseJSON) => {
+            this.getOrders();
+        }).catch((error) => {
+            console.log(error);
+        });
     };
 
     render() {
         return (
             <div>
+                {
+                    (this.state.showModal) ?
+                        <ModalScreen modalType={"xl"} title={"Modal title"}
+                                     closeMethod={this.closeModal}
+                                     primaryMethod={this.updateOrderStatus} primaryButtonTitle={"Update"}
+                                     secondaryMethod={this.closeModal} secondaryButtonTitle={"Close"}>
+                            <div className={"grid-wrapper"}>
+                                <div className={"col-100"}>
+                                    <div className="form-group">
+                                        <label>Shipment status</label>
+                                        <select name={"selectedStatus"} className="form-control"
+                                                value={this.state.selectedStatus} onChange={this.handleChange}>
+                                            <option/>
+                                            {
+                                                (this.state.shipmentStatus.length > 0) ?
+                                                    this.state.shipmentStatus.map(function (obj) {
+                                                        return <option key={'status'+obj.ID}
+                                                                       value={obj.ID}>{obj.Status}</option>
+                                                    })
+                                                    :
+                                                    <option/>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </ModalScreen>
+                        :
+                        ""
+                }
                 <div className="header-group profile-template">
                     <ul className="page-title-group">
                         <li className="no-margin"/>
@@ -96,6 +204,26 @@ class Shipment extends Component {
                 <section className="page-container">
                     <div className={"grid-wrapper"}>
                         <div className={"data-table-container"}>
+                            {
+                                (this.state.selectedRows.length > 0) ?
+                                    <div className={"grid-toolbar context-ribbon"}>
+                                        <div className="button-group context-left" role="group"
+                                             aria-label="Action buttons">
+                                            <button type="button" className="button button-context"
+                                                    onClick={this.editOrder}>Update status
+                                            </button>
+                                        </div>
+                                        <div className={"context-right"}>
+                                                    <span
+                                                        className={"selected-count"}>{this.state.selectedRows.length} selected</span>
+                                            <button type="button" className="button button-context"
+                                                    onClick={this.hideContextRibbon}>Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                    :
+                                    ""
+                            }
                             <ReactTable
                                 data={this.state.shipmentData}
                                 columns={this.state.columns}

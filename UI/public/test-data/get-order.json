@@ -1,0 +1,30 @@
+{
+  "Order": {
+    "ID": 1,
+    "OrderNo": "100001",
+    "OrderDetails": "Running Shoes",
+    "Customer": "PUMA",
+    "ShipmentStaus": null,
+    "IsDelay": false
+  },
+  "OrderShipmentStatusList": [
+    {
+      "ID": 1,
+      "ShipmentStatusID": 1,
+      "ShipmentStatus": "Awaiting order",
+      "ShipmentStatusMessage": "Order has been shifted Test1",
+      "CretedDate": "2019-02-25T00:00:00",
+      "UpdatedDate": "2019-02-25T00:00:00",
+      "IsCurrentStatus": false
+    },
+    {
+      "ID": 3,
+      "ShipmentStatusID": 2,
+      "ShipmentStatus": "Order in processing",
+      "ShipmentStatusMessage": "Order has been shifted Test2",
+      "CretedDate": "2019-02-25T00:00:00",
+      "UpdatedDate": "2019-02-25T00:00:00",
+      "IsCurrentStatus": true
+    }
+  ]
+}
