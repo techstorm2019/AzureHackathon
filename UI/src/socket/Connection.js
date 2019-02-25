@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import * as signalR from '@aspnet/signalr';
-import ServerEndpoint from "../constants/Server-endpoint";
+import API from "../constants/API-config";
 
 class Connection extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class Connection extends Component {
         };
     }
 
-    componentDidMount = () => {
+    componentDidMount() {
         const currentUser = window.prompt('Your email:', 'user@email.com');
         this.setState({
             currentUser
@@ -22,7 +22,9 @@ class Connection extends Component {
             sessionStorage.setItem('currentUser', this.state.currentUser);
 
             let hubConnection = new signalR.HubConnectionBuilder()
-                .withUrl(ServerEndpoint + '/notify')
+                .withUrl(API.CONNECTION_ENDPOINT, options => {
+                    options.Headers["UserId"] = this.state.currentUser;
+                })
                 .configureLogging(signalR.LogLevel.Trace)
                 .build();
 
@@ -33,34 +35,37 @@ class Connection extends Component {
                 this.state.hubConnection
                     .start()
                     .then(() =>
-                        console.log('Connection started!')
+                            console.log('Connection started!'),
+                        this.state.hubConnection
+                            .invoke('LoadNotfications', this.state.currentUser)
+                            .catch(err => console.error(err, 'Error to call LoadNotfications'))
                     ).catch(err =>
-                        console.log(err, 'Error while establishing connection :(')
-                    );
+                    console.log(err, 'Error while establishing connection :(')
+                );
 
-                this.state.hubConnection.on('sendToAll', (user, receivedMessage) => {
-                    const text = `${user}: ${receivedMessage}`;
-                    const messages = this.state.messages.concat([text]);
-                    this.setState({messages}, () => {
+                this.state.hubConnection.on('getAllNotification', (user, receivedMessages) => {
+                    this.setState({
+                        messages: receivedMessages
+                    }, () => {
                         this.props.setNotificationMethod(this.state.messages);
                     });
                 });
             });
         });
-    };
+    }
 
-    sendMessage = () => {
+    /*sendMessage = () => {
         this.state.hubConnection
-            .invoke('ShipmentNotification', this.state.currentUser, this.state.message)
+            .invoke('ReadNotification', this.state.currentUser, /!*notification ID this.state.message*!/)
             .catch(err => console.error(err));
 
         this.setState({message: ''});
-    };
+    };*/
 
     render() {
         return (
             <div>
-                <br/>
+                {/*<br/>
                 <input
                     type="text"
                     value={this.state.message}
@@ -74,7 +79,7 @@ class Connection extends Component {
                             <span style={{display: 'block'}} key={index}> {message} </span>
                         ))
                     }
-                </div>
+                </div>*/}
             </div>
         );
     }

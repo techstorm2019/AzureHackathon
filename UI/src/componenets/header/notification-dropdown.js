@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 
 class NotificationDropDown extends Component {
 
-    readNotification = () => {
+    readNotification = (notification) => {
         this.props.hubConnection
-            .invoke('ShipmentNotification', 'John', 'notification read')
+            .invoke('ReadNotification', sessionStorage.getItem('currentUser'), notification.ID)
             .catch(err => console.error(err));
     };
 
@@ -19,7 +19,7 @@ class NotificationDropDown extends Component {
                             {
                                 notifications.map((notification) => {
                                     return (
-                                        <div className="app-switcher-item" onClick={this.readNotification}>
+                                        <div className="app-switcher-item" onClick={() => this.readNotification(notification)}>
                                             <div className="app-switcher-item-icon-container">
                                                 <div className="image-cropper">
                                                     <img alt=""
@@ -31,7 +31,7 @@ class NotificationDropDown extends Component {
                                                 <span
                                                     className="regular-link-text app-switcher-item-text">Order #102030</span>
                                                 <br/>
-                                                <span className="small-body-text">{notification}</span>
+                                                <span className="small-body-text">{notification.Message}</span>
                                             </div>
                                         </div>
                                     )
