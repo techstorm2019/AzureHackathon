@@ -6,11 +6,11 @@ const HeaderItems = [
         subNavItems:[]
     },
     {
-        label: "Shipment",
+        label: "Orders",
         link: "/shipment",
         activeNav: "shipment",
         subNavItems:[]
-    },
+    }/*,
     {
         label: "Manage",
         link: "/manage",
@@ -33,7 +33,7 @@ const HeaderItems = [
                 activeNav: "admin"
             },
         ]
-    }
+    }*/
 ];
 
 export default HeaderItems;

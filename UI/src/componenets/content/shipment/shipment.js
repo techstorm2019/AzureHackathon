@@ -26,7 +26,8 @@ class Shipment extends Component {
                     Cell: ({original}) => {
                         return (
                             <input
-                                type="checkbox"
+                                type="radio"
+                                name={"rowOption"}
                                 className="checkbox"
                                 checked={this.state.selectedRows.includes(original) === true}
                                 onChange={(event) => this.selectRow(event, original)}
@@ -64,7 +65,7 @@ class Shipment extends Component {
     };
 
     getOrders = () => {
-        fetch(API.GET_ORDERS+"?userID="+sessionStorage.getItem('currentUser'), {
+        fetch(API.GET_ORDERS + "?userID=" + sessionStorage.getItem('currentUser'), {
             headers: FetchHeader,
             credentials: 'same-origin'
         }).then((response) => {
@@ -79,22 +80,10 @@ class Shipment extends Component {
     };
 
     selectRow = (event, original) => {
-        if (event.target.checked) {
-            this.setState({
-                selectedRows: [...this.state.selectedRows, original]
-            }, () => {
-                //this.updateSelectAll();
-            });
-        } else {
-            const toDelete = new Set([original]);
-            let newArr = this.state.selectedRows.filter(obj => !toDelete.has(obj));
-            this.setState({
-                selectedRows: newArr
-            }, () => {
-                //this.updateSelectAll();
-            });
-        }
-
+        this.setState({
+            selectedRows: [original]
+        });
+        this.removeSelected();
         let parent = event.target.parentNode.parentNode.parentNode;
         if (event.target.checked) {
             parent.classList.add("-selected");
@@ -103,9 +92,20 @@ class Shipment extends Component {
         }
     };
 
+    removeSelected = () => {
+        let table = document.getElementsByClassName('local-inv');
+        let checkboxRows = table.length > 0 ? table[0].getElementsByClassName('rt-tr-group') : document.getElementsByClassName('rt-tr-group');
+
+        for (let i = 0; i < checkboxRows.length; i++) {
+            if (checkboxRows[i].classList.contains('-selected')) checkboxRows[i].classList.remove('-selected');
+        }
+    };
+
     hideContextRibbon = () => {
         this.setState({
             selectedRows: []
+        }, () => {
+            this.removeSelected()
         });
     };
 
@@ -122,7 +122,7 @@ class Shipment extends Component {
     };
 
     editOrder = () => {
-        fetch(API.GET_ORDER+"?orderID="+this.state.selectedRows[0].ID, {
+        fetch(API.GET_ORDER + "?orderID=" + this.state.selectedRows[0].ID, {
             headers: FetchHeader,
             credentials: 'same-origin'
         }).then((response) => {
@@ -149,14 +149,25 @@ class Shipment extends Component {
             method: 'POST',
             headers: FetchHeader,
             credentials: 'same-origin',
-            body: JSON.stringify({orderID,shipmentStatusID,notes})
+            body: JSON.stringify({orderID, shipmentStatusID, notes})
         }).then((response) => {
             return RestCheck(response);
         }).then((responseJSON) => {
             this.getOrders();
+            this.closeModal();
+            this.loadNotifications();
         }).catch((error) => {
             console.log(error);
         });
+    };
+
+    loadNotifications = () => {
+        this.props.hubConnection
+            .invoke('LoadNotfications', sessionStorage.getItem('currentUser'))
+            .then(() => {
+                console.log('After shipment status update : LoadNotfications called')
+            })
+            .catch(err => console.error(err, 'Error to call LoadNotfications : after update status'));
     };
 
     render() {
@@ -164,7 +175,7 @@ class Shipment extends Component {
             <div>
                 {
                     (this.state.showModal) ?
-                        <ModalScreen modalType={"xl"} title={"Modal title"}
+                        <ModalScreen modalType={"s"} title={"Modal title"}
                                      closeMethod={this.closeModal}
                                      primaryMethod={this.updateOrderStatus} primaryButtonTitle={"Update"}
                                      secondaryMethod={this.closeModal} secondaryButtonTitle={"Close"}>
@@ -178,7 +189,7 @@ class Shipment extends Component {
                                             {
                                                 (this.state.shipmentStatus.length > 0) ?
                                                     this.state.shipmentStatus.map(function (obj) {
-                                                        return <option key={'status'+obj.ID}
+                                                        return <option key={'status' + obj.ID}
                                                                        value={obj.ID}>{obj.Status}</option>
                                                     })
                                                     :
@@ -196,7 +207,11 @@ class Shipment extends Component {
                     <ul className="page-title-group">
                         <li className="no-margin"/>
                         <li>
-                            <h1>Customer Name</h1>
+                            <h1>{
+                              (this.state.shipmentData.length > 0) ?
+                                    this.state.shipmentData[0].Customer
+                                  : "Customer name"
+                            }</h1>
                         </li>
                     </ul>
                 </div>

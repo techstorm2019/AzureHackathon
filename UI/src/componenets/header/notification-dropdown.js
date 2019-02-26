@@ -4,12 +4,14 @@ class NotificationDropDown extends Component {
 
     readNotification = (notification) => {
         this.props.hubConnection
-            .invoke('ReadNotification', sessionStorage.getItem('currentUser'), notification.ID)
+            .invoke('ReadNotification', sessionStorage.getItem('currentUser'), notification.id)
             .catch(err => console.error(err));
+        alert("Notification successfully read");
     };
 
     render() {
         const notifications = this.props.notificationItems.length > 0 ? this.props.notificationItems : [];
+        console.log("Inside dropdown component",notifications);
 
         return (
             <div className="app-switcher">
@@ -29,9 +31,9 @@ class NotificationDropDown extends Component {
                                             </div>
                                             <div className="app-switcher-item-text-container">
                                                 <span
-                                                    className="regular-link-text app-switcher-item-text">Order #102030</span>
+                                                    className="regular-link-text app-switcher-item-text">Order #{notification.orderNo}</span>
                                                 <br/>
-                                                <span className="small-body-text">{notification.Message}</span>
+                                                <span className="small-body-text">{notification.message}</span>
                                             </div>
                                         </div>
                                     )

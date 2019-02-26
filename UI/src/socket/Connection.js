@@ -15,7 +15,7 @@ class Connection extends Component {
     }
 
     componentDidMount() {
-        const currentUser = window.prompt('Your email:', 'user@email.com');
+        const currentUser = window.prompt('Your email:', 'sanjeebkr.paul@gmail.com');
         this.setState({
             currentUser
         }, () => {
@@ -32,14 +32,17 @@ class Connection extends Component {
                 this.props.setConnectionMethod(this.state.hubConnection);
                 this.state.hubConnection
                     .start()
-                    .then(() =>
-                            console.log('Connection started!'),
+                    .then(() => {
                         this.state.hubConnection
-                            .invoke('LoadNotfications', this.state.currentUser)
-                            .catch(err => console.error(err, 'Error to call LoadNotfications'))
-                    ).catch(err =>
-                    console.log(err, 'Error while establishing connection :(')
-                );
+                            .invoke('LoadNotfications', sessionStorage.getItem('currentUser'))
+                            .then(() => {
+                                console.log('LoadNotfications called')
+                            })
+                            .catch(err => console.error(err, 'Error to call LoadNotfications'));
+                        console.log('Connection started!');
+                    }).catch(err =>
+                        console.log(err, 'Error while establishing connection :(')
+                    );
 
                 this.state.hubConnection.on('getAllNotification', (user, receivedMessages) => {
                     this.setState({

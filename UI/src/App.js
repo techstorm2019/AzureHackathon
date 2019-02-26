@@ -30,6 +30,8 @@ class App extends Component {
     setNotifications = (notifications) => {
         this.setState({
             notifications: notifications
+        },() => {
+            console.log("Notification received", notifications);
         })
     };
 
@@ -54,7 +56,9 @@ class App extends Component {
                             setConnectionMethod={(con) => this.setHubConnection(con)}
                         />
                         <Route exact path="/" component={Dashboard}/>
-                        <Route path="/shipment" component={Shipment}/>
+                        <Route path="/shipment" render={(match) => {
+                            return <Shipment hubConnection={this.state.hubConnection}/>
+                        }}/>
                     </main>
                     <MobileNav accessItems={this.state.accessItems}/>
                 </div>
