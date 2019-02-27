@@ -391,7 +391,7 @@ class Header extends Component {
                                     <li className="dropdown-details">
                                         <p>
                                             <strong>User name</strong><br/>
-                                            user_email@mail.com<br/>
+                                            {sessionStorage.getItem('currentUser')}<br/>
                                             xxxxxxxxxx
                                         </p>
                                     </li>

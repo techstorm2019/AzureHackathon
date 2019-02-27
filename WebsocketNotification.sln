@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsocketNotificationApi", "WebsocketNotificationApi\WebsocketNotificationApi.csproj", "{49124D86-27E7-4B27-9CA8-B4ECB46BD383}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketNotificationWeb", "WebSocketNotificationWeb\WebSocketNotificationWeb.csproj", "{7D5E534F-5975-496B-9245-D463A783FF87}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49124D86-27E7-4B27-9CA8-B4ECB46BD383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49124D86-27E7-4B27-9CA8-B4ECB46BD383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49124D86-27E7-4B27-9CA8-B4ECB46BD383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49124D86-27E7-4B27-9CA8-B4ECB46BD383}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D5E534F-5975-496B-9245-D463A783FF87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D5E534F-5975-496B-9245-D463A783FF87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D5E534F-5975-496B-9245-D463A783FF87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D5E534F-5975-496B-9245-D463A783FF87}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6414189-7304-49AC-B2AE-15B179F282A0}
+	EndGlobalSection
+EndGlobal

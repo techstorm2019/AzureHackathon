@@ -143,7 +143,7 @@ class Shipment extends Component {
     updateOrderStatus = () => {
         const orderID = this.state.selectedOrder.ID;
         const shipmentStatusID = this.state.selectedStatus;
-        const notes = '';
+        const notes = this.state.StatusNote;
 
         fetch(API.POST_UPDATE_ORDER_STATUS, {
             method: 'POST',
@@ -163,11 +163,11 @@ class Shipment extends Component {
 
     loadNotifications = () => {
         this.props.hubConnection
-            .invoke('LoadNotfications', sessionStorage.getItem('currentUser'))
+            .invoke('LoadNotificationOnUpdateOrder', this.state.selectedOrder.ID)
             .then(() => {
-                console.log('After shipment status update : LoadNotfications called')
+                console.log('After shipment status update : LoadNotificationOnUpdateOrder called')
             })
-            .catch(err => console.error(err, 'Error to call LoadNotfications : after update status'));
+            .catch(err => console.error(err, 'Error to call LoadNotificationOnUpdateOrder : after update status'));
     };
 
     render() {
@@ -196,6 +196,13 @@ class Shipment extends Component {
                                                     <option/>
                                             }
                                         </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Shipment status</label>
+                                        <textarea className="form-control" name={"StatusNote"}
+                                              value={this.state.StatusNote}
+                                              onChange={this.handleChange}
+                                        />
                                     </div>
                                 </div>
                             </div>

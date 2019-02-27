@@ -51,6 +51,15 @@ class Connection extends Component {
                         this.props.setNotificationMethod(this.state.messages);
                     });
                 });
+
+                this.state.hubConnection.on('getNotifiedOnOrderUpdate', () => {
+                    this.state.hubConnection
+                        .invoke('LoadNotfications', sessionStorage.getItem('currentUser'))
+                        .then(() => {
+                            console.log('LoadNotfications called after update order')
+                        })
+                        .catch(err => console.error(err, 'Error to call LoadNotfications after update'));
+                });
             });
         });
     }

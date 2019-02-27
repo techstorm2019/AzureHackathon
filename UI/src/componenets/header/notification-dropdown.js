@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Moment from 'react-moment';
 
 class NotificationDropDown extends Component {
 
@@ -32,7 +33,9 @@ class NotificationDropDown extends Component {
                                             <div className="app-switcher-item-text-container">
                                                 <span
                                                     className="regular-link-text app-switcher-item-text">Order #{notification.orderNo}</span>
-                                                <br/>
+                                                <div className="small-inactive-text">
+                                                    <Moment>{notification.updatedDate}</Moment>
+                                                </div>
                                                 <span className="small-body-text">{notification.message}</span>
                                             </div>
                                         </div>
